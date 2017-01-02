@@ -33,4 +33,5 @@ object OAuthErrorCodes extends Enumeration {
   val UnauthorizedClient = Value("unauthorized_client")
   val UnsupportedGrantType = Value("unsupported_grant_type")
   val InvalidScope = Value("invalid_scope")
+  val redirectUriMismatch = Value("redirect_uri_mismatch")
 }
