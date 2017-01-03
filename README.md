@@ -1,3 +1,5 @@
+![Build Status](https://travis-ci.org/chaabaj/openid-scala.svg?branch=master)
+
 # openid-scala
 
 ## Introduction
