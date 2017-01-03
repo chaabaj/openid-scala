@@ -2,7 +2,7 @@ name := "openid-scala"
 
 version := "1.0"
 
-scalaVersion := "2.11.2"
+scalaVersion := "2.11.8"
 
 resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases"
 
