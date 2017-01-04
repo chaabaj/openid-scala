@@ -11,8 +11,8 @@ import spray.json.JsValue
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
 
-trait GoogleOAuthService extends WebServiceApi[JsValue] with OAuthService {
-  override val protocol: DataProtocol[JsValue] = new JsonProtocol
+trait GoogleOAuthService extends OAuthService {
+  val webServiceApi: WebServiceApi[JsValue]
 
   import com.github.chaabaj.openid.oauth.OAuthResponseFormat._
 
@@ -30,7 +30,7 @@ trait GoogleOAuthService extends WebServiceApi[JsValue] with OAuthService {
       ).toEntity
     )
 
-    request(httpRequest)
+    webServiceApi.request(httpRequest)
       .map(_.convertTo[OAuthTokenIssuing])
       .recoverWith {
         case WebServiceException(statusCode, jsonError: JsValue) =>
@@ -41,11 +41,12 @@ trait GoogleOAuthService extends WebServiceApi[JsValue] with OAuthService {
   }
 }
 
-private class GoogleOAuthServiceImpl(val config: OAuthConfig)(implicit val actorSystem: ActorSystem,
-                                                              implicit val timeout: FiniteDuration) extends GoogleOAuthService
 
 object GoogleOAuthService {
   def apply(config: OAuthConfig)(implicit actorSystem: ActorSystem, timeout: FiniteDuration): OAuthService =
-    new GoogleOAuthServiceImpl(config)
+    new GoogleOAuthService {
+      override val webServiceApi: WebServiceApi[JsValue] = WebServiceApi(new JsonProtocol)
+      override val config: OAuthConfig = config
+    }
 }
 
