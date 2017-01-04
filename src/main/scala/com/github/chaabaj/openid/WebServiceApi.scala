@@ -39,10 +39,10 @@ trait WebServiceApi[A] {
 }
 
 object WebServiceApi {
-  def apply[A](protocol: DataProtocol[A])(implicit system: ActorSystem, timeout: FiniteDuration): WebServiceApi[A] =
+  def apply[A](dataProtocol: DataProtocol[A])(implicit system: ActorSystem, _timeout: FiniteDuration): WebServiceApi[A] =
     new WebServiceApi[A] {
       override implicit val actorSystem: ActorSystem = system
-      override val protocol: DataProtocol[A] = protocol
-      override implicit val timeout: FiniteDuration = timeout
+      override val protocol: DataProtocol[A] = dataProtocol
+      override implicit val timeout: FiniteDuration = _timeout
     }
 }

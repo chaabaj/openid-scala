@@ -47,9 +47,9 @@ trait SlackOAuthService extends OAuthService {
 }
 
 object SlackOAuthService {
-  def apply(config: OAuthConfig)(implicit actorSystem: ActorSystem, timeout: FiniteDuration): OAuthService =
+  def apply(oauthConfig: OAuthConfig)(implicit actorSystem: ActorSystem, timeout: FiniteDuration): OAuthService =
     new SlackOAuthService {
       override val webServiceApi: WebServiceApi[JsValue] = WebServiceApi(new JsonProtocol)
-      override val config: OAuthConfig = config
+      override val config: OAuthConfig = oauthConfig
     }
 }
