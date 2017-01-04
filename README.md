@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/chaabaj/openid-scala.svg?branch=master)](https://travis-ci.org/chaabaj/openid-scala)
+[![CircleCI](https://circleci.com/gh/chaabaj/openid-scala/tree/master.svg?style=svg)](https://circleci.com/gh/chaabaj/openid-scala/tree/master)
+
 
 # openid-scala
 
