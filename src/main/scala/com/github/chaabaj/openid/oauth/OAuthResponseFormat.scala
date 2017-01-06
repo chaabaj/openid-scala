@@ -7,9 +7,9 @@ import spray.json.{DeserializationException, JsString, JsValue, JsonFormat}
 sealed trait OAuthResponse
 case class OAuthTokenIssuing(accessToken: String,
                              tokenType: String,
-                             scope: Option[String],
-                             refreshToken: Option[String],
-                             expireIn: Option[Long]) extends OAuthResponse
+                             scope: Option[String] = None,
+                             refreshToken: Option[String] = None,
+                             expireIn: Option[Long] = None) extends OAuthResponse
 case class OAuthError(error: OAuthErrorCodes.Value, errorDescription: String) extends OAuthResponse
 
 object OAuthResponseFormat extends SnakifiedSprayJsonSupport {

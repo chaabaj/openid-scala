@@ -18,6 +18,20 @@ trait SlackOAuthService extends WebServiceApi[JsValue] with OAuthService {
 
   import com.github.chaabaj.openid.oauth.OAuthResponseFormat._
 
+  case class SlackTokenIssuing(accessToken: String, scope: String)
+
+  implicit val slackTokenJsonFormat = jsonFormat2(SlackTokenIssuing)
+
+  private def convertToOAuthTokenIssuing(value: JsValue): OAuthTokenIssuing = {
+    val token = value.convertTo[SlackTokenIssuing]
+
+    OAuthTokenIssuing(
+      accessToken = token.accessToken,
+      tokenType = "",
+      scope = Some(token.scope)
+    )
+  }
+
   private def toOAuthError(slackError: String): OAuthError =
     Try(OAuthErrorCodes.withName(slackError))
       .map(OAuthError(_, slackError))
@@ -36,7 +50,7 @@ trait SlackOAuthService extends WebServiceApi[JsValue] with OAuthService {
 
     request(httpRequest)
       .map(SlackResponseHandler.handle)
-      .map(_.asJsObject.convertTo[OAuthTokenIssuing])
+      .map(convertToOAuthTokenIssuing)
       .recover {
         case t @ WebServiceException(statusCode, jsonError: JsValue) =>
           throw OAuthException(statusCode, toOAuthError(jsonError.convertTo[String]))
