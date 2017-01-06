@@ -1,11 +1,11 @@
 package com.github.chaabaj.openid.utils
 
-import org.scalatest.{FlatSpec, Matchers}
 import spray.json._
+import org.specs2.mutable.Specification
 
 import scala.util.Try
 
-class SnakifiedSprayJsonSupportSpec extends FlatSpec with Matchers {
+class SnakifiedSprayJsonSupportSpec extends Specification {
 
   case class TestData(zipCode: String, snakifiedField: String, superSnakifiedExample: String)
 
@@ -15,7 +15,7 @@ class SnakifiedSprayJsonSupportSpec extends FlatSpec with Matchers {
 
   import TestDataFormat._
 
-  it should "parse correctly snakefied json" in {
+  "parse correctly snakefied json" >> {
     val json =
       """
         | {
@@ -26,6 +26,6 @@ class SnakifiedSprayJsonSupportSpec extends FlatSpec with Matchers {
       """.stripMargin
     val parsedJson = Try(json.parseJson.convertTo[TestData])
 
-    parsedJson.isSuccess should be (true)
+    parsedJson.isSuccess must_== true
   }
 }
