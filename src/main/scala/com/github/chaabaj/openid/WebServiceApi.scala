@@ -20,7 +20,7 @@ trait WebServiceApi[A] {
 
   val http = Http()
 
-  protected def request(httpRequest: HttpRequest)(implicit exc: ExecutionContext): Future[A] =
+  def request(httpRequest: HttpRequest)(implicit exc: ExecutionContext): Future[A] =
     for {
       response <- http.singleRequest(httpRequest)
       body <- response.entity.toStrict(timeout).map(_.data.decodeString("utf8"))
@@ -36,4 +36,13 @@ trait WebServiceApi[A] {
         }
       }
     } yield data
+}
+
+object WebServiceApi {
+  def apply[A](dataProtocol: DataProtocol[A])(implicit system: ActorSystem, _timeout: FiniteDuration): WebServiceApi[A] =
+    new WebServiceApi[A] {
+      override implicit val actorSystem: ActorSystem = system
+      override val protocol: DataProtocol[A] = dataProtocol
+      override implicit val timeout: FiniteDuration = _timeout
+    }
 }

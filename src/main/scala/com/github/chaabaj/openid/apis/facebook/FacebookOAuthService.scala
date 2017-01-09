@@ -12,8 +12,8 @@ import spray.json.JsValue
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
 
-trait FacebookOAuthService extends WebServiceApi[JsValue] with OAuthService {
-  override val protocol: DataProtocol[JsValue] = new JsonProtocol
+trait FacebookOAuthService extends OAuthService {
+  val webServiceApi: WebServiceApi[JsValue]
 
   import com.github.chaabaj.openid.oauth.OAuthResponseFormat._
   import com.github.chaabaj.openid.apis.facebook.FacebookErrorFormat._
@@ -36,7 +36,7 @@ trait FacebookOAuthService extends WebServiceApi[JsValue] with OAuthService {
         )
     )
 
-    request(httpRequest)
+    webServiceApi.request(httpRequest)
       .map(_.convertTo[OAuthTokenIssuing])
       .recover {
         case t @ WebServiceException(statusCode, jsonError: JsValue) =>
@@ -56,11 +56,10 @@ trait FacebookOAuthService extends WebServiceApi[JsValue] with OAuthService {
   }
 }
 
-private class FacebookOAuthServiceImpl(val config: OAuthConfig)
-                                      (implicit val actorSystem: ActorSystem,
-                                       implicit val timeout: FiniteDuration) extends FacebookOAuthService
-
 object FacebookOAuthService {
-  def apply(config: OAuthConfig)(implicit actorSystem: ActorSystem, timeout: FiniteDuration): OAuthService =
-    new FacebookOAuthServiceImpl(config)
+  def apply(oauthConfig: OAuthConfig)(implicit actorSystem: ActorSystem, timeout: FiniteDuration): OAuthService =
+    new FacebookOAuthService {
+      override val webServiceApi: WebServiceApi[JsValue] = WebServiceApi(new JsonProtocol)
+      override val config: OAuthConfig = oauthConfig
+    }
 }

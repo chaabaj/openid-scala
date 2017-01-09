@@ -1,11 +1,11 @@
 package com.github.chaabaj.openid.protocol
 
-import org.scalatest.{FlatSpec, Matchers}
+import org.specs2.mutable.Specification
 import spray.json.JsNull
 
-class JsonProtocolSpec extends FlatSpec with Matchers {
+class JsonProtocolSpec extends Specification {
 
-  it should "parse correctly a valid json" in {
+  "parse correctly a valid json" >> {
     val json =
       """
         |{
@@ -17,24 +17,24 @@ class JsonProtocolSpec extends FlatSpec with Matchers {
     val protocol = new JsonProtocol
     val parsedJson = protocol.parse(json)
 
-    parsedJson.isSuccess should be (true)
+    parsedJson.isSuccess must_== true
   }
 
-  it should "failed with invalid json" in {
+  "failed with invalid json" >> {
     val str = "<h1>Test</h1>"
     val protocol = new JsonProtocol
     val parsedJson = protocol.parse(str)
 
-    parsedJson.isFailure should be (true)
+    parsedJson.isFailure must_== true
   }
 
-  it should "return JsNull for empty body" in {
+  "return JsNull for empty body" >> {
     val json = ""
     val protocol = new JsonProtocol
     val parsedJson = protocol.parse(json)
 
     parsedJson
       .map(_ should be (JsNull))
-      .getOrElse(parsedJson.isSuccess should be (true))
+      .getOrElse(parsedJson.isSuccess must_== true)
   }
 }

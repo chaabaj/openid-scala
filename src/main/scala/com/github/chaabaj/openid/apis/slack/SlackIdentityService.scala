@@ -13,8 +13,8 @@ import spray.json.DefaultJsonProtocol._
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
 
-trait SlackIdentityService extends WebServiceApi[JsValue] with IdentityService {
-  override val protocol: DataProtocol[JsValue] = new JsonProtocol
+trait SlackIdentityService extends IdentityService {
+  val webServiceApi: WebServiceApi[JsValue]
 
   case class SlackUserResponse(email: String)
   case class SlackIdentityResponse(user: SlackUserResponse)
@@ -32,18 +32,16 @@ trait SlackIdentityService extends WebServiceApi[JsValue] with IdentityService {
         )
     )
 
-    request(httpRequest)
+    webServiceApi.request(httpRequest)
       .map(SlackResponseHandler.handle)
       .map(_.asJsObject.convertTo[SlackIdentityResponse].user.email)
   }
 }
 
-private class SlackIdentityServiceImpl(
-  implicit val actorSystem: ActorSystem,
-  implicit val timeout: FiniteDuration
-) extends SlackIdentityService
 
 object SlackIdentityService {
   def apply()(implicit actorSystem: ActorSystem, timeout: FiniteDuration): IdentityService =
-    new SlackIdentityServiceImpl()
+    new SlackIdentityService {
+      override val webServiceApi: WebServiceApi[JsValue] = WebServiceApi(new JsonProtocol)
+    }
 }

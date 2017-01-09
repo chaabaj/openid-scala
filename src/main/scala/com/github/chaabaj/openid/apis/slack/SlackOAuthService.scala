@@ -13,8 +13,8 @@ import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
-trait SlackOAuthService extends WebServiceApi[JsValue] with OAuthService {
-  override val protocol: DataProtocol[JsValue] = new JsonProtocol
+trait SlackOAuthService extends OAuthService {
+  val webServiceApi: WebServiceApi[JsValue]
 
   import com.github.chaabaj.openid.oauth.OAuthResponseFormat._
 
@@ -48,7 +48,7 @@ trait SlackOAuthService extends WebServiceApi[JsValue] with OAuthService {
         ))
     )
 
-    request(httpRequest)
+    webServiceApi.request(httpRequest)
       .map(SlackResponseHandler.handle)
       .map(convertToOAuthTokenIssuing)
       .recover {
@@ -60,12 +60,10 @@ trait SlackOAuthService extends WebServiceApi[JsValue] with OAuthService {
   }
 }
 
-private class SlackOAuthServiceImpl(
-  val config: OAuthConfig
-)(implicit val actorSystem: ActorSystem,
-  implicit val timeout: FiniteDuration) extends SlackOAuthService
-
 object SlackOAuthService {
-  def apply(config: OAuthConfig)(implicit actorSystem: ActorSystem, timeout: FiniteDuration): OAuthService =
-    new SlackOAuthServiceImpl(config)
+  def apply(oauthConfig: OAuthConfig)(implicit actorSystem: ActorSystem, timeout: FiniteDuration): OAuthService =
+    new SlackOAuthService {
+      override val webServiceApi: WebServiceApi[JsValue] = WebServiceApi(new JsonProtocol)
+      override val config: OAuthConfig = oauthConfig
+    }
 }

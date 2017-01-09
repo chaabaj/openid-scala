@@ -13,8 +13,8 @@ import spray.json.DefaultJsonProtocol._
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
 
-trait FacebookIdentityService extends WebServiceApi[JsValue] with IdentityService {
-  override val protocol: DataProtocol[JsValue] = new JsonProtocol
+trait FacebookIdentityService extends IdentityService {
+  val webServiceApi: WebServiceApi[JsValue]
 
   override def getIdentity(token: OAuthTokenIssuing)(implicit exc: ExecutionContext): Future[String] = {
     val httpRequest = HttpRequest(
@@ -27,15 +27,14 @@ trait FacebookIdentityService extends WebServiceApi[JsValue] with IdentityServic
         )
     )
 
-    request(httpRequest)
+    webServiceApi.request(httpRequest)
       .map(_.asJsObject.getFields("email").head.convertTo[String])
   }
 }
 
-private class FacebookIdentityServiceImpl()(implicit val actorSystem: ActorSystem,
-                                            implicit val timeout: FiniteDuration) extends FacebookIdentityService
-
 object FacebookIdentityService {
   def apply()(implicit actorSystem: ActorSystem, timeout: FiniteDuration): IdentityService =
-    new FacebookIdentityServiceImpl
+    new FacebookIdentityService {
+      override val webServiceApi: WebServiceApi[JsValue] = WebServiceApi(new JsonProtocol)
+    }
 }
