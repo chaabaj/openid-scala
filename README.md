@@ -20,7 +20,7 @@ It's only server side authentication. You must implement yourself the client-sid
 - OpenStack
 - Any other can come from a PR
 
-## Implement another provider
+## Implement with a custom provider
 
 You need to implement two trait to create a OpenIDConnect service: OAuthService + IdentityService
 
