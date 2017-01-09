@@ -5,8 +5,8 @@
 
 ## Introduction
 
-This library contains several apis from different provider to connect a user using OpenID services(OAuth2 + Identity service)
-It's only server side authentication.
+This library contains several apis from different provider to connect a user using OpenIDConnect services(OAuth2 + Identity service)
+It's only server side authentication. You must implement yourself the client-side part.
 
 ## Providers supported
 
@@ -14,7 +14,7 @@ It's only server side authentication.
 - Facebook
 - Slack
 
-## Providers that will be implemented
+## Providers to be implemented
 
 - Github
 - OpenStack
@@ -86,4 +86,4 @@ object SampleOpenIDConnect {
 
 ## Installation
 
-Actually you cannot find this library on maven but soon it will be published. You can use this repository to get the library
+Actually you can't find this library on maven but soon it will be published. You can use this repository to get the library.
