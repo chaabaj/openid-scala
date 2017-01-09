@@ -22,7 +22,7 @@ trait GoogleIdentityService extends IdentityService {
     ).withHeaders(RawHeader("Authorization", s"Bearer ${token.accessToken}"))
 
     webServiceApi.request(httpRequest)
-      .map(_.asJsObject.getFields("email").head.convertTo[String]
+      .map(_.asJsObject.getFields("email").head.convertTo[String])
   }
 }
 
