@@ -1,7 +1,7 @@
 package com.github.chaabaj.openid.apis.google
 
 import akka.actor.ActorSystem
-import akka.http.scaladsl.model.{FormData, HttpMethods, HttpRequest}
+import akka.http.scaladsl.model.{FormData, HttpMethods, HttpRequest, StatusCodes}
 import com.github.chaabaj.openid.WebServiceApi
 import com.github.chaabaj.openid.exceptions.{OAuthException, WebServiceException}
 import com.github.chaabaj.openid.oauth._

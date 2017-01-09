@@ -1,18 +1,17 @@
-package com.github.chaabaj.openid.apis
+package com.github.chaabaj.openid.apis.google
 
-import akka.http.scaladsl.model.HttpRequest
+import akka.http.scaladsl.model.{HttpRequest, StatusCodes}
 import com.github.chaabaj.openid.WebServiceApi
-import com.github.chaabaj.openid.apis.google.GoogleIdentityService
+import com.github.chaabaj.openid.exceptions.WebServiceException
 import com.github.chaabaj.openid.oauth.OAuthTokenIssuing
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import spray.json._
 
-import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration._
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 class GoogleIdentityServiceSpec extends Specification with Mockito {
-  sequential
 
   private def createService(): GoogleIdentityService =
     new GoogleIdentityService {
@@ -23,7 +22,7 @@ class GoogleIdentityServiceSpec extends Specification with Mockito {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  "retreive user identity" >> {
+  "should retrieve user identity" >> {
     val service = createService()
     val response =
       """
@@ -52,6 +51,15 @@ class GoogleIdentityServiceSpec extends Specification with Mockito {
   }
 
   "failed with a WebServiceException if the request fails" >> {
-    1 must_== 1
+    val error = WebServiceException(StatusCodes.BadRequest, "Unknown error")
+    val service = createService()
+    val token = OAuthTokenIssuing(
+      accessToken = "test",
+      tokenType = "Bearer"
+    )
+
+    service.webServiceApi.request(any[HttpRequest])(any[ExecutionContext]) returns Future.failed(error)
+
+    Await.result(service.getIdentity(token), 10 seconds) must throwA[WebServiceException[String]]
   }
 }
