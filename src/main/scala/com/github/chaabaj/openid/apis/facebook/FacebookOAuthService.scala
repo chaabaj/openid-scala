@@ -56,6 +56,11 @@ trait FacebookOAuthService extends OAuthService {
   }
 }
 
+private class FacebookOAuthServiceImpl(override val config: OAuthConfig)(implicit actorSystem: ActorSystem, timeout: FiniteDuration)
+ extends FacebookOAuthService {
+  override val webServiceApi: WebServiceApi[JsValue] = WebServiceApi(new JsonProtocol)
+}
+
 object FacebookOAuthService {
   def apply(oauthConfig: OAuthConfig)(implicit actorSystem: ActorSystem, timeout: FiniteDuration): OAuthService =
     new FacebookOAuthService {

@@ -32,9 +32,12 @@ trait FacebookIdentityService extends IdentityService {
   }
 }
 
+private class FacebookIdentityServiceImpl()(implicit actorSystem: ActorSystem, timeout: FiniteDuration)
+ extends FacebookIdentityService {
+  override val webServiceApi: WebServiceApi[JsValue] = WebServiceApi(new JsonProtocol)
+}
+
 object FacebookIdentityService {
   def apply()(implicit actorSystem: ActorSystem, timeout: FiniteDuration): IdentityService =
-    new FacebookIdentityService {
-      override val webServiceApi: WebServiceApi[JsValue] = WebServiceApi(new JsonProtocol)
-    }
+    new FacebookIdentityServiceImpl()
 }

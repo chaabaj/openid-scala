@@ -41,12 +41,14 @@ trait GoogleOAuthService extends OAuthService {
   }
 }
 
+private class GoogleOAuthServiceImpl(override val config: OAuthConfig)
+                                    (implicit actorSystem: ActorSystem, timeout: FiniteDuration)
+  extends GoogleOAuthService {
+  override val webServiceApi: WebServiceApi[JsValue] = WebServiceApi(new JsonProtocol)
+}
 
 object GoogleOAuthService {
   def apply(oauthConfig: OAuthConfig)(implicit actorSystem: ActorSystem, timeout: FiniteDuration): OAuthService =
-    new GoogleOAuthService {
-      override val webServiceApi: WebServiceApi[JsValue] = WebServiceApi(new JsonProtocol)
-      override val config: OAuthConfig = oauthConfig
-    }
+    new GoogleOAuthServiceImpl(oauthConfig)
 }
 

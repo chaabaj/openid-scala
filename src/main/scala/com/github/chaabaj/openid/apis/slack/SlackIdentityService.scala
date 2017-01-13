@@ -38,10 +38,12 @@ trait SlackIdentityService extends IdentityService {
   }
 }
 
+private class SlackIdentityServiceImpl()(implicit actorSystem: ActorSystem, timeout: FiniteDuration)
+ extends SlackIdentityService {
+  override val webServiceApi: WebServiceApi[JsValue] = WebServiceApi(new JsonProtocol)
+}
 
 object SlackIdentityService {
   def apply()(implicit actorSystem: ActorSystem, timeout: FiniteDuration): IdentityService =
-    new SlackIdentityService {
-      override val webServiceApi: WebServiceApi[JsValue] = WebServiceApi(new JsonProtocol)
-    }
+    new SlackIdentityServiceImpl()
 }

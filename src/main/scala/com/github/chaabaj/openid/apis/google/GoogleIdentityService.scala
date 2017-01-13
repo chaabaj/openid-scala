@@ -26,9 +26,12 @@ trait GoogleIdentityService extends IdentityService {
   }
 }
 
+private class GoogleIdentityServiceImpl()(implicit actorSystem: ActorSystem, timeout: FiniteDuration)
+  extends GoogleIdentityService {
+  override val webServiceApi: WebServiceApi[JsValue] = WebServiceApi(new JsonProtocol)
+}
+
 object GoogleIdentityService {
   def apply()(implicit actorSystem: ActorSystem, timeout: FiniteDuration): IdentityService =
-    new GoogleIdentityService {
-      override val webServiceApi: WebServiceApi[JsValue] = WebServiceApi(new JsonProtocol)
-    }
+    new GoogleIdentityServiceImpl()
 }
