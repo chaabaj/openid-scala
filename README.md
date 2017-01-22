@@ -13,10 +13,10 @@ It's only server side authentication. You must implement yourself the client-sid
 - Google
 - Facebook
 - Slack
+- Github
 
 ## Providers to be implemented
 
-- Github
 - OpenStack
 - Any other can come from a PR
 
