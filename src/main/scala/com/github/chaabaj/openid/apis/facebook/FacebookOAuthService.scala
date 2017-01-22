@@ -6,7 +6,7 @@ import akka.http.scaladsl.model.{HttpRequest, Uri}
 import com.github.chaabaj.openid.WebServiceApi
 import com.github.chaabaj.openid.exceptions.{OAuthException, WebServiceException}
 import com.github.chaabaj.openid.oauth._
-import com.github.chaabaj.openid.protocol.{DataProtocol, JsonProtocol}
+import com.github.chaabaj.openid.protocol.JsonProtocol
 import spray.json.JsValue
 
 import scala.concurrent.duration.FiniteDuration
@@ -63,8 +63,5 @@ private class FacebookOAuthServiceImpl(override val config: OAuthConfig)(implici
 
 object FacebookOAuthService {
   def apply(oauthConfig: OAuthConfig)(implicit actorSystem: ActorSystem, timeout: FiniteDuration): OAuthService =
-    new FacebookOAuthService {
-      override val webServiceApi: WebServiceApi[JsValue] = WebServiceApi(new JsonProtocol)
-      override val config: OAuthConfig = oauthConfig
-    }
+    new FacebookOAuthServiceImpl(oauthConfig)
 }

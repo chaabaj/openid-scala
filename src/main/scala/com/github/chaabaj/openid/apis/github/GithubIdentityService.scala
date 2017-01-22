@@ -7,6 +7,7 @@ import com.github.chaabaj.openid.WebServiceApi
 import com.github.chaabaj.openid.oauth.OAuthTokenIssuing
 import com.github.chaabaj.openid.openid.IdentityService
 import com.github.chaabaj.openid.protocol.JsonProtocol
+import spray.json.DefaultJsonProtocol._
 import spray.json.JsValue
 
 import scala.concurrent.duration.FiniteDuration
