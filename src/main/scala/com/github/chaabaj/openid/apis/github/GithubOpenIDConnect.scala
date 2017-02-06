@@ -8,8 +8,5 @@ import scala.concurrent.duration.FiniteDuration
 
 object GithubOpenIDConnect {
   def apply(config: OAuthConfig)(implicit actorSystem: ActorSystem, timeout: FiniteDuration): OpenIDConnect[Github] =
-    new OpenIDConnect[Github] {
-      override val identityService: IdentityService[Github] = GithubIdentityService()
-      override val oauthService: OAuthService[Github] = GithubOAuthService(config)
-    }
+    new OpenIDConnect[Github](GithubIdentityService(), GithubOAuthService(config))
 }

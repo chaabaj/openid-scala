@@ -4,17 +4,17 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.model.HttpRequest
 import akka.http.scaladsl.model.headers.RawHeader
 import com.github.chaabaj.openid.WebServiceApi
-import com.github.chaabaj.openid.oauth.{AccessTokenResponse, AccessTokenSuccess, Google}
+import com.github.chaabaj.openid.oauth.{AccessTokenSuccess, Google}
 import com.github.chaabaj.openid.openid.IdentityService
 import com.github.chaabaj.openid.protocol.JsonProtocol
-import spray.json.JsValue
 import spray.json.DefaultJsonProtocol._
+import spray.json.JsValue
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
 
 trait GoogleIdentityService extends IdentityService[Google] {
-  val webServiceApi: WebServiceApi[JsValue]
+  val webServiceApi: WebServiceApi
 
   override def getIdentity(token: AccessTokenSuccess)
                           (implicit exc: ExecutionContext): Future[String] = {
@@ -29,7 +29,7 @@ trait GoogleIdentityService extends IdentityService[Google] {
 
 private class GoogleIdentityServiceImpl()(implicit actorSystem: ActorSystem, timeout: FiniteDuration)
   extends GoogleIdentityService {
-  override val webServiceApi: WebServiceApi[JsValue] = WebServiceApi(new JsonProtocol)
+  override val webServiceApi: WebServiceApi = WebServiceApi()
 }
 
 object GoogleIdentityService {

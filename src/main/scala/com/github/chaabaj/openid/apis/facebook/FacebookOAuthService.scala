@@ -12,7 +12,7 @@ trait FacebookOAuthService extends OAuthService[Facebook]
 
 private class FacebookOAuthServiceImpl(override val config: OAuthConfig)(implicit actorSystem: ActorSystem, timeout: FiniteDuration)
  extends FacebookOAuthService {
-  override val webServiceApi: WebServiceApi[JsValue] = WebServiceApi(new JsonProtocol)
+  override val webServiceApi: WebServiceApi = WebServiceApi()
 
   override protected def accessTokenUrl: String = "https://graph.facebook.com/v2.8/oauth/access_token"
 }

@@ -1,6 +1,6 @@
 package com.github.chaabaj.openid.openid
 
-import com.github.chaabaj.openid.oauth.{AccessTokenResponse, Provider}
+import com.github.chaabaj.openid.oauth.Provider
 
 import scala.concurrent.{ExecutionContext, Future}
 

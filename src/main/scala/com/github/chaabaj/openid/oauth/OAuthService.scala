@@ -12,7 +12,7 @@ trait OAuthService[A <: Provider] {
   val config: OAuthConfig
 
   protected def  accessTokenUrl: String
-  protected def webServiceApi: WebServiceApi[JsValue]
+  protected def webServiceApi: WebServiceApi
   def issueOAuthToken(request: AccessTokenRequest)
                      (implicit exc: ExecutionContext, jfs: JsonFormat[A#AccessTokenSuccess], jfe: JsonFormat[A#AccessTokenError]):
   Future[A#AccessTokenSuccess] = {

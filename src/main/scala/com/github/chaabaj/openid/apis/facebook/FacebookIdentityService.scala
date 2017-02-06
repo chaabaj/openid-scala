@@ -4,17 +4,17 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.model.Uri.Query
 import akka.http.scaladsl.model.{HttpRequest, Uri}
 import com.github.chaabaj.openid.WebServiceApi
-import com.github.chaabaj.openid.oauth.{AccessTokenResponse, Facebook}
+import com.github.chaabaj.openid.oauth.Facebook
 import com.github.chaabaj.openid.openid.IdentityService
-import com.github.chaabaj.openid.protocol.{DataProtocol, JsonProtocol}
-import spray.json.JsValue
+import com.github.chaabaj.openid.protocol.JsonProtocol
 import spray.json.DefaultJsonProtocol._
+import spray.json.JsValue
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
 
 trait FacebookIdentityService extends IdentityService[Facebook] {
-  val webServiceApi: WebServiceApi[JsValue]
+  val webServiceApi: WebServiceApi
 
   override def getIdentity(token: FacebookAccessTokenSuccess)(implicit exc: ExecutionContext): Future[String] = {
     val httpRequest = HttpRequest(
@@ -34,7 +34,7 @@ trait FacebookIdentityService extends IdentityService[Facebook] {
 
 private class FacebookIdentityServiceImpl()(implicit actorSystem: ActorSystem, timeout: FiniteDuration)
  extends FacebookIdentityService {
-  override val webServiceApi: WebServiceApi[JsValue] = WebServiceApi(new JsonProtocol)
+  override val webServiceApi: WebServiceApi = WebServiceApi()
 }
 
 object FacebookIdentityService {

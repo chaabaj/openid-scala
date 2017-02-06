@@ -1,15 +1,12 @@
 package com.github.chaabaj.openid.apis.google
 
 import akka.actor.ActorSystem
-import com.github.chaabaj.openid.oauth.{Google, OAuthConfig, OAuthService}
-import com.github.chaabaj.openid.openid.{IdentityService, OpenIDConnect}
+import com.github.chaabaj.openid.oauth.{Google, OAuthConfig}
+import com.github.chaabaj.openid.openid.OpenIDConnect
 
 import scala.concurrent.duration.FiniteDuration
 
 object GoogleOpenIDConnect {
   def apply(config: OAuthConfig)(implicit actorSystem: ActorSystem, timeout: FiniteDuration): OpenIDConnect[Google] =
-    new OpenIDConnect[Google] {
-      override val identityService: IdentityService[Google] = GoogleIdentityService()
-      override val oauthService: OAuthService[Google] = GoogleOAuthService(config)
-    }
+    new OpenIDConnect[Google](GoogleIdentityService(), GoogleOAuthService(config))
 }

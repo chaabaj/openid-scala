@@ -8,8 +8,5 @@ import scala.concurrent.duration.FiniteDuration
 
 object FacebookOpenIDConnect {
   def apply(config: OAuthConfig)(implicit actorSystem: ActorSystem, timeout: FiniteDuration): OpenIDConnect[Facebook] =
-    new OpenIDConnect[Facebook] {
-      override val identityService: IdentityService[Facebook] = FacebookIdentityService()
-      override val oauthService: OAuthService[Facebook] = FacebookOAuthService(config)
-    }
+    new OpenIDConnect[Facebook](FacebookIdentityService(), FacebookOAuthService(config))
 }

@@ -7,9 +7,10 @@ import scala.concurrent.{ExecutionContext, Future}
 
 case class UserIdentity[A](token: A, email: String)
 
-trait OpenIDConnect[A <: Provider] {
-  val identityService: IdentityService[A]
+class OpenIDConnect[A <: Provider](
+  val identityService: IdentityService[A],
   val oauthService: OAuthService[A]
+) {
 
   def authenticate(request: AccessTokenRequest)(implicit exc: ExecutionContext, jsf:
   JsonFormat[A#AccessTokenSuccess], jse: JsonFormat[A#AccessTokenError]):

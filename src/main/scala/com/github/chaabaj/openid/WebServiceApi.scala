@@ -2,25 +2,22 @@ package com.github.chaabaj.openid
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
-import akka.http.scaladsl.model.{HttpRequest, Uri}
+import akka.http.scaladsl.model.HttpRequest
 import akka.stream.ActorMaterializer
-import protocol.DataProtocol
+import com.github.chaabaj.openid.exceptions.{MalformedResponseException, WebServiceException}
+import com.github.chaabaj.openid.protocol.JsonProtocol
+import spray.json.JsValue
 
-import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
-import exceptions.{MalformedResponseException, WebServiceException}
 
-trait WebServiceApi[A] {
-  val protocol: DataProtocol[A]
-
-  implicit val actorSystem: ActorSystem
-  implicit val timeout: FiniteDuration
+private [openid] class WebServiceApi(implicit actorSystem: ActorSystem, timeout: FiniteDuration) {
   implicit val materializer = ActorMaterializer()
-
+  val protocol = new JsonProtocol
   val http = Http()
 
-  def request(httpRequest: HttpRequest)(implicit exc: ExecutionContext): Future[A] =
+  def request(httpRequest: HttpRequest)(implicit exc: ExecutionContext): Future[JsValue] =
     for {
       response <- http.singleRequest(httpRequest)
       body <- response.entity.toStrict(timeout).map(_.data.decodeString("utf8"))
@@ -38,11 +35,7 @@ trait WebServiceApi[A] {
     } yield data
 }
 
-object WebServiceApi {
-  def apply[A](dataProtocol: DataProtocol[A])(implicit system: ActorSystem, _timeout: FiniteDuration): WebServiceApi[A] =
-    new WebServiceApi[A] {
-      override implicit val actorSystem: ActorSystem = system
-      override val protocol: DataProtocol[A] = dataProtocol
-      override implicit val timeout: FiniteDuration = _timeout
-    }
+private[openid] object WebServiceApi {
+  def apply()(implicit system: ActorSystem, _timeout: FiniteDuration): WebServiceApi =
+    new WebServiceApi()
 }

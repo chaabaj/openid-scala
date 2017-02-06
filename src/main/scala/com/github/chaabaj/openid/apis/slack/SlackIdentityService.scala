@@ -14,7 +14,7 @@ import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
 
 trait SlackIdentityService extends IdentityService[Slack] {
-  val webServiceApi: WebServiceApi[JsValue]
+  val webServiceApi: WebServiceApi
 
   case class SlackUserResponse(email: String)
   case class SlackIdentityResponse(user: SlackUserResponse)
@@ -40,7 +40,7 @@ trait SlackIdentityService extends IdentityService[Slack] {
 
 private class SlackIdentityServiceImpl()(implicit actorSystem: ActorSystem, timeout: FiniteDuration)
  extends SlackIdentityService {
-  override val webServiceApi: WebServiceApi[JsValue] = WebServiceApi(new JsonProtocol)
+  override val webServiceApi: WebServiceApi = WebServiceApi()
 }
 
 object SlackIdentityService {

@@ -4,17 +4,17 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.model.headers.OAuth2BearerToken
 import akka.http.scaladsl.model.{HttpRequest, headers}
 import com.github.chaabaj.openid.WebServiceApi
-import com.github.chaabaj.openid.oauth.{AccessTokenResponse, AccessTokenSuccess, Github}
+import com.github.chaabaj.openid.oauth.{AccessTokenSuccess, Github}
 import com.github.chaabaj.openid.openid.IdentityService
 import com.github.chaabaj.openid.protocol.JsonProtocol
+import com.github.chaabaj.openid.utils.SnakifiedSprayJsonSupport._
 import spray.json.{JsArray, JsValue}
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
-import com.github.chaabaj.openid.utils.SnakifiedSprayJsonSupport._
 
 trait GithubIdentityService extends IdentityService[Github] {
-  val webServiceApi: WebServiceApi[JsValue]
+  val webServiceApi: WebServiceApi
 
   override def getIdentity(token: AccessTokenSuccess)(implicit exc: ExecutionContext): Future[String] = {
     val request = HttpRequest(
@@ -35,7 +35,7 @@ trait GithubIdentityService extends IdentityService[Github] {
 
 private class GithubIdentityServiceImpl()(implicit actorSystem: ActorSystem, timeout: FiniteDuration)
   extends GithubIdentityService {
-  override val webServiceApi: WebServiceApi[JsValue] = WebServiceApi(new JsonProtocol)
+  override val webServiceApi: WebServiceApi = WebServiceApi()
 }
 
 object GithubIdentityService {

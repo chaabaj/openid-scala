@@ -8,10 +8,7 @@ import scala.concurrent.duration.FiniteDuration
 
 object SlackOpenIDConnect {
   def apply(config: OAuthConfig)(implicit actorSystem: ActorSystem, timeout: FiniteDuration): OpenIDConnect[Slack] =
-    new OpenIDConnect[Slack] {
-      override val identityService: IdentityService[Slack] = SlackIdentityService()
-      override val oauthService: OAuthService[Slack] = SlackOAuthService(config)
-    }
+    new OpenIDConnect[Slack](SlackIdentityService(), SlackOAuthService(config))
 }
 
 

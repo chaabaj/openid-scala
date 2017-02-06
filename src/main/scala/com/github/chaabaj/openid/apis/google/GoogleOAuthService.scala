@@ -16,7 +16,7 @@ trait GoogleOAuthService extends OAuthService[Google]
 private class GoogleOAuthServiceImpl(override val config: OAuthConfig)
                                     (implicit actorSystem: ActorSystem, timeout: FiniteDuration)
   extends GoogleOAuthService {
-  override val webServiceApi: WebServiceApi[JsValue] = WebServiceApi(new JsonProtocol)
+  override val webServiceApi: WebServiceApi = WebServiceApi()
   override protected def accessTokenUrl: String = "https://www.googleapis.com/oauth2/v4/token"
 }
 

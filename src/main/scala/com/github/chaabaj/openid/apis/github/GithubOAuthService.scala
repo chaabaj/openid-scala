@@ -13,7 +13,7 @@ trait GithubOAuthService extends OAuthService[Github]
 private class GithubOAuthServiceImpl(override val config: OAuthConfig)
   (implicit actorSystem: ActorSystem, timeout: FiniteDuration)
   extends GithubOAuthService {
-  override val webServiceApi: WebServiceApi[JsValue] = WebServiceApi(new JsonProtocol)
+  override val webServiceApi: WebServiceApi = WebServiceApi()
 
   override protected def accessTokenUrl: String = "https://api.github.com/users/whatever"
 }

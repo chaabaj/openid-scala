@@ -12,7 +12,7 @@ trait SlackOAuthService extends OAuthService[Slack]
 
 private class SlackOAuthServiceImpl(override val config: OAuthConfig)
                                    (implicit actorSystem: ActorSystem, timeout: FiniteDuration) extends SlackOAuthService {
-  override val webServiceApi: WebServiceApi[JsValue] = WebServiceApi(new JsonProtocol)
+  override val webServiceApi: WebServiceApi = WebServiceApi()
 
   override protected def accessTokenUrl: String = "https://slack.com/api/oauth.access"
 }
