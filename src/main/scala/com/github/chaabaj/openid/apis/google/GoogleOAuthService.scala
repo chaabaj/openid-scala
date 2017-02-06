@@ -11,44 +11,17 @@ import spray.json.JsValue
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
 
-trait GoogleOAuthService extends OAuthService {
-  val webServiceApi: WebServiceApi[JsValue]
-
-  import com.github.chaabaj.openid.oauth.OAuthResponseFormat._
-
-  override def issueOAuthToken(authorizationCode: String, redirectUri: String)
-                              (implicit exc: ExecutionContext): Future[OAuthTokenIssuing] = {
-    val httpRequest = HttpRequest(
-      HttpMethods.POST,
-      uri = "https://www.googleapis.com/oauth2/v4/token",
-      entity = FormData(
-        "client_id" -> config.clientId,
-        "client_secret" -> config.clientSecret,
-        "code" -> authorizationCode,
-        "redirect_uri" -> redirectUri,
-        "grant_type" -> "authorization_code"
-      ).toEntity
-    )
-
-    webServiceApi.request(httpRequest)
-      .map(_.convertTo[OAuthTokenIssuing])
-      .recoverWith {
-        case WebServiceException(statusCode, jsonError: JsValue) =>
-          throw OAuthException(statusCode, jsonError.convertTo[OAuthError])
-        case t: Throwable =>
-          throw t
-      }
-  }
-}
+trait GoogleOAuthService extends OAuthService[Google]
 
 private class GoogleOAuthServiceImpl(override val config: OAuthConfig)
                                     (implicit actorSystem: ActorSystem, timeout: FiniteDuration)
   extends GoogleOAuthService {
   override val webServiceApi: WebServiceApi[JsValue] = WebServiceApi(new JsonProtocol)
+  override protected def accessTokenUrl: String = "https://www.googleapis.com/oauth2/v4/token"
 }
 
 object GoogleOAuthService {
-  def apply(oauthConfig: OAuthConfig)(implicit actorSystem: ActorSystem, timeout: FiniteDuration): OAuthService =
+  def apply(oauthConfig: OAuthConfig)(implicit actorSystem: ActorSystem, timeout: FiniteDuration): OAuthService[Google] =
     new GoogleOAuthServiceImpl(oauthConfig)
 }
 

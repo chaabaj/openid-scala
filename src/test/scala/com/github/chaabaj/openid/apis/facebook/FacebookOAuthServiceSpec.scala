@@ -3,7 +3,7 @@ package com.github.chaabaj.openid.apis.facebook
 import akka.http.scaladsl.model.{HttpRequest, StatusCodes}
 import com.github.chaabaj.openid.WebServiceApi
 import com.github.chaabaj.openid.exceptions.{OAuthException, WebServiceException}
-import com.github.chaabaj.openid.oauth.{OAuthConfig, OAuthTokenIssuing}
+import com.github.chaabaj.openid.oauth.{OAuthConfig, AccessTokenResponse}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import spray.json._
@@ -41,7 +41,7 @@ class FacebookOAuthServiceSpec extends Specification with Mockito {
     service.webServiceApi.request(any[HttpRequest])(any[ExecutionContext]) returns Future.successful(response)
 
     val token = Await.result(service.issueOAuthToken("test", "http://test.com"), duration)
-    val expectedToken = response.convertTo[OAuthTokenIssuing]
+    val expectedToken = response.convertTo[AccessTokenResponse]
 
     token must equalTo(expectedToken)
   }

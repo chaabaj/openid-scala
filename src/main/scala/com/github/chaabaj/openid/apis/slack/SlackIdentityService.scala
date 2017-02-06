@@ -4,16 +4,16 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.model.Uri.Query
 import akka.http.scaladsl.model.{HttpRequest, Uri}
 import com.github.chaabaj.openid.WebServiceApi
-import com.github.chaabaj.openid.oauth.OAuthTokenIssuing
+import com.github.chaabaj.openid.oauth.{AccessTokenSuccess, Slack}
 import com.github.chaabaj.openid.openid.IdentityService
-import com.github.chaabaj.openid.protocol.{DataProtocol, JsonProtocol}
-import spray.json._
+import com.github.chaabaj.openid.protocol.JsonProtocol
 import spray.json.DefaultJsonProtocol._
+import spray.json._
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
 
-trait SlackIdentityService extends IdentityService {
+trait SlackIdentityService extends IdentityService[Slack] {
   val webServiceApi: WebServiceApi[JsValue]
 
   case class SlackUserResponse(email: String)
@@ -22,7 +22,7 @@ trait SlackIdentityService extends IdentityService {
   implicit val slackUserFormat = jsonFormat1(SlackUserResponse)
   implicit val slackIdentityResponse = jsonFormat1(SlackIdentityResponse)
 
-  override def getIdentity(token: OAuthTokenIssuing)(implicit exc: ExecutionContext): Future[String] = {
+  override def getIdentity(token: AccessTokenSuccess)(implicit exc: ExecutionContext): Future[String] = {
     val httpRequest = HttpRequest(
       uri = Uri("https://slack.com/api/users.identity")
         .withQuery(
@@ -44,6 +44,6 @@ private class SlackIdentityServiceImpl()(implicit actorSystem: ActorSystem, time
 }
 
 object SlackIdentityService {
-  def apply()(implicit actorSystem: ActorSystem, timeout: FiniteDuration): IdentityService =
+  def apply()(implicit actorSystem: ActorSystem, timeout: FiniteDuration): IdentityService[Slack] =
     new SlackIdentityServiceImpl()
 }

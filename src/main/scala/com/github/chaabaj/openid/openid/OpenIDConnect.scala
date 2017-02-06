@@ -1,18 +1,22 @@
 package com.github.chaabaj.openid.openid
 
-import com.github.chaabaj.openid.oauth.{OAuthService, OAuthTokenIssuing}
+import com.github.chaabaj.openid.oauth.{AccessTokenRequest, OAuthService, Provider}
+import spray.json.JsonFormat
 
 import scala.concurrent.{ExecutionContext, Future}
 
-case class UserIdentity(token: OAuthTokenIssuing, email: String)
+case class UserIdentity[A](token: A, email: String)
 
-trait OpenIDConnect {
-  val identityService: IdentityService
-  val oauthService: OAuthService
+trait OpenIDConnect[A <: Provider] {
+  val identityService: IdentityService[A]
+  val oauthService: OAuthService[A]
 
-  def authenticate(authorizationCode: String, redirectUri: String)(implicit exc: ExecutionContext): Future[UserIdentity] =
+  def authenticate(request: AccessTokenRequest)(implicit exc: ExecutionContext, jsf:
+  JsonFormat[A#AccessTokenSuccess], jse: JsonFormat[A#AccessTokenError]):
+  Future[UserIdentity[A#AccessTokenSuccess]] =
     for {
-      token <- oauthService.issueOAuthToken(authorizationCode, redirectUri)
+      token <- oauthService.issueOAuthToken(request)
       identity <- identityService.getIdentity(token)
     } yield UserIdentity(token, identity)
 }
+

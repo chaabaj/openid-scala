@@ -3,7 +3,7 @@ package com.github.chaabaj.openid.apis.slack
 import akka.http.scaladsl.model.{HttpRequest, StatusCode, StatusCodes}
 import com.github.chaabaj.openid.WebServiceApi
 import com.github.chaabaj.openid.exceptions.WebServiceException
-import com.github.chaabaj.openid.oauth.OAuthTokenIssuing
+import com.github.chaabaj.openid.oauth.AccessTokenResponse
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import spray.json._
@@ -37,7 +37,7 @@ class SlackIdentityServiceSpec extends Specification with Mockito {
         |    }
         |}
       """.stripMargin.parseJson
-    val token = OAuthTokenIssuing(
+    val token = AccessTokenResponse(
       accessToken = "test",
       tokenType = ""
     )
@@ -58,7 +58,7 @@ class SlackIdentityServiceSpec extends Specification with Mockito {
         |  "error": "not_authed"
         |}
       """.stripMargin.parseJson
-    val token = OAuthTokenIssuing(
+    val token = AccessTokenResponse(
       accessToken = "test",
       tokenType = ""
     )

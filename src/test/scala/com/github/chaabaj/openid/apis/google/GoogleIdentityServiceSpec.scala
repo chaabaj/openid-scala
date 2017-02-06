@@ -3,7 +3,7 @@ package com.github.chaabaj.openid.apis.google
 import akka.http.scaladsl.model.{HttpRequest, StatusCodes}
 import com.github.chaabaj.openid.WebServiceApi
 import com.github.chaabaj.openid.exceptions.WebServiceException
-import com.github.chaabaj.openid.oauth.OAuthTokenIssuing
+import com.github.chaabaj.openid.oauth.AccessTokenResponse
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import spray.json._
@@ -38,7 +38,7 @@ class GoogleIdentityServiceSpec extends Specification with Mockito {
         | "gender": "male"
         |}
       """.stripMargin.parseJson
-    val token = OAuthTokenIssuing(
+    val token = AccessTokenResponse(
       accessToken = "test",
       tokenType = "Bearer"
     )
@@ -53,7 +53,7 @@ class GoogleIdentityServiceSpec extends Specification with Mockito {
   "failed with a WebServiceException if the request fails" >> {
     val error = WebServiceException(StatusCodes.BadRequest, "Unknown error")
     val service = createService()
-    val token = OAuthTokenIssuing(
+    val token = AccessTokenResponse(
       accessToken = "test",
       tokenType = "Bearer"
     )

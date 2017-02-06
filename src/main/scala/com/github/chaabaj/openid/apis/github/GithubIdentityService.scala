@@ -4,18 +4,19 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.model.headers.OAuth2BearerToken
 import akka.http.scaladsl.model.{HttpRequest, headers}
 import com.github.chaabaj.openid.WebServiceApi
-import com.github.chaabaj.openid.oauth.OAuthTokenIssuing
+import com.github.chaabaj.openid.oauth.{AccessTokenResponse, AccessTokenSuccess, Github}
 import com.github.chaabaj.openid.openid.IdentityService
 import com.github.chaabaj.openid.protocol.JsonProtocol
 import spray.json.{JsArray, JsValue}
+
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
 import com.github.chaabaj.openid.utils.SnakifiedSprayJsonSupport._
 
-trait GithubIdentityService extends IdentityService {
+trait GithubIdentityService extends IdentityService[Github] {
   val webServiceApi: WebServiceApi[JsValue]
 
-  override def getIdentity(token: OAuthTokenIssuing)(implicit exc: ExecutionContext): Future[String] = {
+  override def getIdentity(token: AccessTokenSuccess)(implicit exc: ExecutionContext): Future[String] = {
     val request = HttpRequest(
       uri = "https://api.github.com/user/emails"
     ).withHeaders(headers.Authorization(OAuth2BearerToken(token.accessToken)))
@@ -38,6 +39,7 @@ private class GithubIdentityServiceImpl()(implicit actorSystem: ActorSystem, tim
 }
 
 object GithubIdentityService {
-  def apply()(implicit actorSystem: ActorSystem, timeout: FiniteDuration): IdentityService =
+  def apply()(implicit actorSystem: ActorSystem, timeout: FiniteDuration): IdentityService[Github] =
     new GithubIdentityServiceImpl()
 }
+
