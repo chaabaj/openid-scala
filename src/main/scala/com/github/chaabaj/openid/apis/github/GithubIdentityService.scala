@@ -13,8 +13,12 @@ import spray.json.{JsArray, JsValue}
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
 
+// Github does not support openid-connect. This implementation emulates that using OAuth API.
 trait GithubIdentityService extends IdentityService[Github] {
   val webServiceApi: WebServiceApi
+
+  // TODO change this
+  override type UserInfo = String
 
   override def getIdentity(token: AccessTokenSuccess)(implicit exc: ExecutionContext): Future[String] = {
     val request = HttpRequest(

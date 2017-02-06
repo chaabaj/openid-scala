@@ -6,15 +6,17 @@ import akka.http.scaladsl.model.{HttpRequest, Uri}
 import com.github.chaabaj.openid.WebServiceApi
 import com.github.chaabaj.openid.oauth.Facebook
 import com.github.chaabaj.openid.openid.IdentityService
-import com.github.chaabaj.openid.protocol.JsonProtocol
 import spray.json.DefaultJsonProtocol._
-import spray.json.JsValue
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
 
+// Facebook does not support openid-connect. This implementation emulates that using OAuth API.
 trait FacebookIdentityService extends IdentityService[Facebook] {
   val webServiceApi: WebServiceApi
+
+  // TODO change this
+  override type UserInfo = String
 
   override def getIdentity(token: FacebookAccessTokenSuccess)(implicit exc: ExecutionContext): Future[String] = {
     val httpRequest = HttpRequest(

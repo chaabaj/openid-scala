@@ -4,6 +4,6 @@ import spray.json.DefaultJsonProtocol._
 
 case class FacebookError(`type`: String, code: Int, message: String)
 
-object FacebookErrorFormat {
-  implicit val facebookErrorFormat = jsonFormat3(FacebookError)
+object FacebookError {
+  implicit val facebookErrorFormat = jsonFormat3(FacebookError.apply)
 }

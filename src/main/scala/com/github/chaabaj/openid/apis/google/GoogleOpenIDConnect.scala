@@ -1,8 +1,8 @@
 package com.github.chaabaj.openid.apis.google
 
 import akka.actor.ActorSystem
-import com.github.chaabaj.openid.oauth.{Google, OAuthConfig}
-import com.github.chaabaj.openid.openid.OpenIDConnect
+import com.github.chaabaj.openid.oauth.{Google, OAuthConfig, OAuthService}
+import com.github.chaabaj.openid.openid.{IdentityService, OpenIDConnect}
 
 import scala.concurrent.duration.FiniteDuration
 

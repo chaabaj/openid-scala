@@ -3,7 +3,7 @@ package com.github.chaabaj.openid.apis.google
 import akka.http.scaladsl.model.{HttpRequest, StatusCodes}
 import com.github.chaabaj.openid.WebServiceApi
 import com.github.chaabaj.openid.exceptions.WebServiceException
-import com.github.chaabaj.openid.oauth.AccessTokenResponse
+import com.github.chaabaj.openid.oauth.AccessTokenSuccess
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import spray.json._
@@ -15,7 +15,7 @@ class GoogleIdentityServiceSpec extends Specification with Mockito {
 
   private def createService(): GoogleIdentityService =
     new GoogleIdentityService {
-      override val webServiceApi: WebServiceApi[JsValue] = smartMock[WebServiceApi[JsValue]]
+      override val webServiceApi: WebServiceApi = smartMock[WebServiceApi]
     }
 
   private val duration = 10 seconds
@@ -27,35 +27,52 @@ class GoogleIdentityServiceSpec extends Specification with Mockito {
     val response =
       """
         |{
-        | "id": "116067672871220103663",
+        | "kind": "example",
         | "email": "blabla.test@gmail.com",
-        | "verified_email": true,
+        | "email_verified": true,
         | "name": "blabla test",
         | "given_name": "blable",
         | "family_name": "test",
-        | "link": "https://plus.google.com/118097672523170103663",
         | "picture": "https://lh3.googleusercontent.com/-ExUIqdedCWA/AABBAACEAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg",
-        | "gender": "male"
+        | "gender": "male",
+        | "hd": "example.com",
+        | "profile": "profile",
+        | "sub": "sub",
+        | "hd": "example.com",
+        | "locale": "fr"
         |}
       """.stripMargin.parseJson
-    val token = AccessTokenResponse(
+    val token = AccessTokenSuccess(
       accessToken = "test",
-      tokenType = "Bearer"
+      tokenType = Some("Bearer")
     )
 
     service.webServiceApi.request(any[HttpRequest])(any[ExecutionContext]) returns Future.successful(response)
 
     val identity = Await.result(service.getIdentity(token), duration)
 
-    identity must equalTo("blabla.test@gmail.com")
+    identity must equalTo(UserInfo(
+      kind = Some("example"),
+      gender = Some("male"),
+      familyName = Some("test"),
+      givenName = Some("blable"),
+      email = Some("blabla.test@gmail.com"),
+      emailVerified = Some(true),
+      hd = Some("example.com"),
+      name = Some("blabla test"),
+      sub = Some("sub"),
+      picture = Some("https://lh3.googleusercontent.com/-ExUIqdedCWA/AABBAACEAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg"),
+      profile = Some("profile"),
+      locale = Some("fr")
+    ))
   }
 
   "failed with a WebServiceException if the request fails" >> {
     val error = WebServiceException(StatusCodes.BadRequest, "Unknown error")
     val service = createService()
-    val token = AccessTokenResponse(
+    val token = AccessTokenSuccess(
       accessToken = "test",
-      tokenType = "Bearer"
+      tokenType = Some("Bearer")
     )
 
     service.webServiceApi.request(any[HttpRequest])(any[ExecutionContext]) returns Future.failed(error)

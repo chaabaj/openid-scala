@@ -13,8 +13,12 @@ import spray.json._
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
 
+// Slack does not support openid-connect. This implementation emulates that using OAuth API.
 trait SlackIdentityService extends IdentityService[Slack] {
   val webServiceApi: WebServiceApi
+
+  // TODO change this
+  override type UserInfo = String
 
   case class SlackUserResponse(email: String)
   case class SlackIdentityResponse(user: SlackUserResponse)

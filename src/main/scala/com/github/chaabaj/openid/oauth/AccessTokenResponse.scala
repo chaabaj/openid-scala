@@ -4,20 +4,20 @@ import spray.json.RootJsonFormat
 
 case class AccessTokenSuccess(
   accessToken: String,
-  tokenType: String,
+  tokenType: Option[String],
   scope: Option[String] = None,
-  idToken: Option[String],
+  idToken: Option[String] = None,
   refreshToken: Option[String] = None,
   expireIn: Option[Long] = None,
-  state: Option[String])
+  state: Option[String] = None)
 
 object AccessTokenSuccess {
   implicit val jsonFormat: RootJsonFormat[AccessTokenSuccess] = jsonFormat7(AccessTokenSuccess.apply)
 }
 case class AccessTokenError(
   error: String,
-  errorDescription: Option[String],
-  errorUri: Option[String]
+  errorDescription: Option[String] = None,
+  errorUri: Option[String] = None
 )
 
 object AccessTokenError {

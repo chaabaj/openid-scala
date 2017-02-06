@@ -1,20 +1,20 @@
 package com.github.chaabaj.openid.apis.slack
 
-import akka.http.scaladsl.model.{HttpRequest, StatusCode, StatusCodes}
+import akka.http.scaladsl.model.{HttpRequest, StatusCodes}
 import com.github.chaabaj.openid.WebServiceApi
 import com.github.chaabaj.openid.exceptions.WebServiceException
-import com.github.chaabaj.openid.oauth.AccessTokenResponse
+import com.github.chaabaj.openid.oauth.AccessTokenSuccess
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import spray.json._
 
-import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration._
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 class SlackIdentityServiceSpec extends Specification with Mockito {
   private def createService(): SlackIdentityService =
     new SlackIdentityService {
-      override val webServiceApi: WebServiceApi[JsValue] = smartMock[WebServiceApi[JsValue]]
+      override val webServiceApi: WebServiceApi = smartMock[WebServiceApi]
     }
 
   private val duration = 10 seconds
@@ -37,9 +37,9 @@ class SlackIdentityServiceSpec extends Specification with Mockito {
         |    }
         |}
       """.stripMargin.parseJson
-    val token = AccessTokenResponse(
+    val token = AccessTokenSuccess(
       accessToken = "test",
-      tokenType = ""
+      tokenType = None
     )
 
     service.webServiceApi.request(any[HttpRequest])(any[ExecutionContext]) returns Future.successful(response)
@@ -58,9 +58,9 @@ class SlackIdentityServiceSpec extends Specification with Mockito {
         |  "error": "not_authed"
         |}
       """.stripMargin.parseJson
-    val token = AccessTokenResponse(
+    val token = AccessTokenSuccess(
       accessToken = "test",
-      tokenType = ""
+      tokenType = None
     )
     val error = WebServiceException(StatusCodes.BadRequest, response)
 

@@ -6,7 +6,3 @@ object OAuthResponseFormat extends SnakifiedSprayJsonSupport {
 
 }
 
-
-
-
-
