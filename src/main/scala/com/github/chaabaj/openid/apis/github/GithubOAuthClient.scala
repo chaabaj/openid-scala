@@ -12,8 +12,7 @@ trait GithubOAuthClient
   override final type Provider = Github
 }
 
-private class GithubOAuthClientImpl(override val config: OAuthConfig)
-  (implicit actorSystem: ActorSystem, timeout: FiniteDuration)
+private class GithubOAuthClientImpl(implicit actorSystem: ActorSystem, timeout: FiniteDuration)
   extends GithubOAuthClient {
   override val httpClient: HttpClient = HttpClient()
 
@@ -21,7 +20,7 @@ private class GithubOAuthClientImpl(override val config: OAuthConfig)
 }
 
 object GithubOAuthClient {
-  def apply(oauthConfig: OAuthConfig)(implicit actorSystem: ActorSystem, timeout: FiniteDuration): GithubOAuthClient =
-    new GithubOAuthClientImpl(oauthConfig)
+  def apply(implicit actorSystem: ActorSystem, timeout: FiniteDuration): GithubOAuthClient =
+    new GithubOAuthClientImpl()
 }
 

@@ -12,14 +12,13 @@ trait SlackOAuthClient
   override type Provider = Slack
 }
 
-private class SlackOAuthClientImpl(override val config: OAuthConfig)
-                                   (implicit actorSystem: ActorSystem, timeout: FiniteDuration) extends SlackOAuthClient {
+private class SlackOAuthClientImpl(implicit actorSystem: ActorSystem, timeout: FiniteDuration) extends SlackOAuthClient {
   override val httpClient: HttpClient = HttpClient()
 
   override protected def accessTokenUrl: String = "https://slack.com/api/oauth.access"
 }
 
 object SlackOAuthClient {
-  def apply(oauthConfig: OAuthConfig)(implicit actorSystem: ActorSystem, timeout: FiniteDuration): OAuthClient =
-    new SlackOAuthClientImpl(oauthConfig)
+  def apply(implicit actorSystem: ActorSystem, timeout: FiniteDuration): OAuthClient =
+    new SlackOAuthClientImpl()
 }

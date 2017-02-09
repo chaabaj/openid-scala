@@ -12,7 +12,7 @@ trait FacebookOAuthClient
   override final type Provider = Facebook
 }
 
-private class FacebookOAuthClientImpl(override val config: OAuthConfig)(implicit actorSystem: ActorSystem, timeout: FiniteDuration)
+private class FacebookOAuthClientImpl(implicit actorSystem: ActorSystem, timeout: FiniteDuration)
  extends FacebookOAuthClient {
   override val httpClient: HttpClient = HttpClient()
 
@@ -20,6 +20,6 @@ private class FacebookOAuthClientImpl(override val config: OAuthConfig)(implicit
 }
 
 object FacebookOAuthClient {
-  def apply(oauthConfig: OAuthConfig)(implicit actorSystem: ActorSystem, timeout: FiniteDuration): FacebookOAuthClient =
-    new FacebookOAuthClientImpl(oauthConfig)
+  def apply(implicit actorSystem: ActorSystem, timeout: FiniteDuration): FacebookOAuthClient =
+    new FacebookOAuthClientImpl()
 }

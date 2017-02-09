@@ -3,7 +3,7 @@ package com.github.chaabaj.openid.apis.slack
 import akka.http.scaladsl.model.{HttpRequest, StatusCodes}
 import com.github.chaabaj.openid.HttpClient
 import com.github.chaabaj.openid.exceptions.{OAuthException, WebServiceException}
-import com.github.chaabaj.openid.oauth.{AccessTokenError, AccessTokenRequest, OAuthConfig}
+import com.github.chaabaj.openid.oauth.{AccessTokenError, AccessTokenRequest}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import spray.json._
@@ -16,10 +16,6 @@ class SlackOAuthServiceSpec extends Specification with Mockito {
   private def createService(): SlackOAuthClient =
     new SlackOAuthClient {
       override val httpClient: HttpClient = smartMock[HttpClient]
-      override val config: OAuthConfig = OAuthConfig(
-        clientId = "",
-        clientSecret = ""
-      )
       override protected def accessTokenUrl: String = "http://example.com"
     }
 
@@ -39,7 +35,7 @@ class SlackOAuthServiceSpec extends Specification with Mockito {
 
     service.httpClient.request(any[HttpRequest])(any[ExecutionContext]) returns Future.successful(response)
 
-    val token = Await.result(service.issueOAuthToken(AccessTokenRequest("test", "http://test.com", "id")), duration)
+    val token = Await.result(service.issueOAuthToken(AccessTokenRequest("test", "http://test.com", "id", "")), duration)
 
     token.accessToken must equalTo("test")
   }
@@ -58,6 +54,6 @@ class SlackOAuthServiceSpec extends Specification with Mockito {
 
     service.httpClient.request(any[HttpRequest])(any[ExecutionContext]) returns Future.failed(error)
 
-    Await.result(service.issueOAuthToken(AccessTokenRequest("test", "http://test.com", "id")), duration) must throwA[OAuthException[AccessTokenError]]
+    Await.result(service.issueOAuthToken(AccessTokenRequest("test", "http://test.com", "id", "")), duration) must throwA[OAuthException[AccessTokenError]]
   }
 }

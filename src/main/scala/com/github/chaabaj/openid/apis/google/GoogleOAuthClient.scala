@@ -19,8 +19,7 @@ trait GoogleOAuthClient
   override final type UserInfo = google.UserInfo
 }
 
-private class GoogleOAuthClientImpl(override val config: OAuthConfig)
-                                    (implicit actorSystem: ActorSystem, timeout: FiniteDuration)
+private class GoogleOAuthClientImpl(implicit actorSystem: ActorSystem, timeout: FiniteDuration)
   extends GoogleOAuthClient {
   override val httpClient: HttpClient = HttpClient()
   override protected def accessTokenUrl: String = "https://www.googleapis.com/oauth2/v4/token"
@@ -36,7 +35,7 @@ private class GoogleOAuthClientImpl(override val config: OAuthConfig)
 }
 
 object GoogleOAuthClient {
-  def apply(oauthConfig: OAuthConfig)(implicit actorSystem: ActorSystem, timeout: FiniteDuration): GoogleOAuthClient =
-    new GoogleOAuthClientImpl(oauthConfig)
+  def apply()(implicit actorSystem: ActorSystem, timeout: FiniteDuration): GoogleOAuthClient =
+    new GoogleOAuthClientImpl()
 }
 

@@ -19,7 +19,7 @@ trait SupportsIssuingAccessToken { self: OAuthClient =>
       uri = accessTokenUrl,
       entity = FormData(
         "client_id" -> request.clientId,
-        "client_secret" -> config.clientSecret,
+        "client_secret" -> request.clientSecret,
         "code" -> request.code,
         "redirect_uri" -> request.redirectUri,
         "grant_type" -> "authorization_code"
