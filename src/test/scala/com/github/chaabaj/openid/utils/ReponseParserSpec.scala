@@ -1,9 +1,9 @@
-package com.github.chaabaj.openid.protocol
+package com.github.chaabaj.openid.utils
 
 import org.specs2.mutable.Specification
 import spray.json.JsNull
 
-class JsonProtocolSpec extends Specification {
+class ReponseParserSpec extends Specification {
 
   "parse correctly a valid json" >> {
     val json =
@@ -14,7 +14,7 @@ class JsonProtocolSpec extends Specification {
         | "test": "test"
         |}
       """.stripMargin
-    val protocol = new JsonProtocol
+    val protocol = new JsonResponseParser
     val parsedJson = protocol.parse(json)
 
     parsedJson.isSuccess must_== true
@@ -22,7 +22,7 @@ class JsonProtocolSpec extends Specification {
 
   "failed with invalid json" >> {
     val str = "<h1>Test</h1>"
-    val protocol = new JsonProtocol
+    val protocol = new JsonResponseParser
     val parsedJson = protocol.parse(str)
 
     parsedJson.isFailure must_== true
@@ -30,7 +30,7 @@ class JsonProtocolSpec extends Specification {
 
   "return JsNull for empty body" >> {
     val json = ""
-    val protocol = new JsonProtocol
+    val protocol = new JsonResponseParser
     val parsedJson = protocol.parse(json)
 
     parsedJson
