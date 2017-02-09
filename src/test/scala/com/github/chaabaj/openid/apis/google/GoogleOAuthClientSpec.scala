@@ -1,7 +1,7 @@
 package com.github.chaabaj.openid.apis.google
 
 import akka.http.scaladsl.model.{HttpRequest, StatusCodes}
-import com.github.chaabaj.openid.WebServiceApi
+import com.github.chaabaj.openid.HttpClient
 import com.github.chaabaj.openid.exceptions.{OAuthException, WebServiceException}
 import com.github.chaabaj.openid.oauth.{AccessTokenError, AccessTokenRequest, AccessTokenSuccess, OAuthConfig}
 import org.specs2.mock.Mockito
@@ -11,23 +11,25 @@ import spray.json._
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}
 
-class GoogleOAuthServiceSpec extends Specification with Mockito {
+class GoogleOAuthClientSpec extends Specification with Mockito {
 
-  private def createService(): GoogleOAuthService =
-    new GoogleOAuthService {
-      override val webServiceApi: WebServiceApi = smartMock[WebServiceApi]
+  private def createService(): GoogleOAuthClient =
+    new GoogleOAuthClient {
+      override val httpClient: HttpClient = smartMock[HttpClient]
       override val config: OAuthConfig = OAuthConfig(
         clientId = "",
         clientSecret = ""
       )
       override protected def accessTokenUrl: String = "http://example.com"
+
+      override def getUserInfo(token: AccessTokenSuccess)(implicit exc: ExecutionContext): Future[UserInfo] = ???
     }
 
   private val duration = 10 seconds
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  "should retrieve token" >> {
+  "#should retrieve token" >> {
     val service = createService()
     val response =
       """
@@ -39,7 +41,7 @@ class GoogleOAuthServiceSpec extends Specification with Mockito {
         |}
       """.stripMargin.parseJson
 
-    service.webServiceApi.request(any[HttpRequest])(any[ExecutionContext]) returns Future.successful(response)
+    service.httpClient.request(any[HttpRequest])(any[ExecutionContext]) returns Future.successful(response)
 
     val token = Await.result(service.issueOAuthToken(AccessTokenRequest("test", "http://test.com", "id")), duration)
     val expectedToken = response.convertTo[AccessTokenSuccess]
@@ -58,7 +60,7 @@ class GoogleOAuthServiceSpec extends Specification with Mockito {
       """.stripMargin.parseJson
     val error = WebServiceException(StatusCodes.BadRequest, response)
 
-    service.webServiceApi.request(any[HttpRequest])(any[ExecutionContext]) returns Future.failed(error)
+    service.httpClient.request(any[HttpRequest])(any[ExecutionContext]) returns Future.failed(error)
 
     Await.result(service.issueOAuthToken(AccessTokenRequest("test", "http://test.com", "id")), duration) must throwA[OAuthException[AccessTokenError]]
   }
@@ -66,7 +68,7 @@ class GoogleOAuthServiceSpec extends Specification with Mockito {
   "should fails with a RuntimeException" >> {
     val service = createService()
 
-    service.webServiceApi.request(any[HttpRequest])(any[ExecutionContext]) returns Future.failed(new RuntimeException)
+    service.httpClient.request(any[HttpRequest])(any[ExecutionContext]) returns Future.failed(new RuntimeException)
 
     Await.result(service.issueOAuthToken(AccessTokenRequest("test", "http://test.com", "id")), duration) must throwA[RuntimeException]
   }

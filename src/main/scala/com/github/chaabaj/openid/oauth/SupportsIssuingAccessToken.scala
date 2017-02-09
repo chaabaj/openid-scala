@@ -1,21 +1,19 @@
 package com.github.chaabaj.openid.oauth
 
 import akka.http.scaladsl.model.{FormData, HttpMethods, HttpRequest}
-import com.github.chaabaj.openid.WebServiceApi
+import com.github.chaabaj.openid.HttpClient
 import com.github.chaabaj.openid.exceptions.{OAuthException, WebServiceException}
 import spray.json.{JsValue, JsonFormat}
 
 import scala.concurrent.{ExecutionContext, Future}
-case class OAuthConfig(clientId: String, clientSecret: String)
 
-trait OAuthService[A <: Provider] {
-  val config: OAuthConfig
+trait SupportsIssuingAccessToken { self: OAuthClient =>
 
   protected def  accessTokenUrl: String
-  def webServiceApi: WebServiceApi
+  def httpClient: HttpClient
   def issueOAuthToken(request: AccessTokenRequest)
-                     (implicit exc: ExecutionContext, jfs: JsonFormat[A#AccessTokenSuccess], jfe: JsonFormat[A#AccessTokenError]):
-  Future[A#AccessTokenSuccess] = {
+    (implicit exc: ExecutionContext, jfs: JsonFormat[AccessTokenSuccess], jfe: JsonFormat[Provider#AccessTokenError]):
+  Future[AccessTokenSuccess] = {
     val httpRequest = HttpRequest(
       HttpMethods.POST,
       uri = accessTokenUrl,
@@ -27,13 +25,14 @@ trait OAuthService[A <: Provider] {
         "grant_type" -> "authorization_code"
       ).toEntity
     )
-    webServiceApi.request(httpRequest)
-      .map(_.convertTo[A#AccessTokenSuccess])
+    httpClient.request(httpRequest)
+      .map(_.convertTo[AccessTokenSuccess])
       .recover {
         case WebServiceException(status, jsonError: JsValue) =>
-          throw new OAuthException(status, jsonError.convertTo[A#AccessTokenError])
+          throw new OAuthException(status, jsonError.convertTo[Provider#AccessTokenError])
         case t: Throwable =>
           throw t
       }
   }
+
 }

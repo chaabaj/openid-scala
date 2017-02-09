@@ -1,21 +1,21 @@
 package com.github.chaabaj.openid.apis.slack
 
 import akka.http.scaladsl.model.{HttpRequest, StatusCodes}
-import com.github.chaabaj.openid.WebServiceApi
+import com.github.chaabaj.openid.HttpClient
 import com.github.chaabaj.openid.exceptions.{OAuthException, WebServiceException}
 import com.github.chaabaj.openid.oauth.{AccessTokenError, AccessTokenRequest, OAuthConfig}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import spray.json._
 
-import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration._
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 class SlackOAuthServiceSpec extends Specification with Mockito {
 
-  private def createService(): SlackOAuthService =
-    new SlackOAuthService {
-      override val webServiceApi: WebServiceApi = smartMock[WebServiceApi]
+  private def createService(): SlackOAuthClient =
+    new SlackOAuthClient {
+      override val httpClient: HttpClient = smartMock[HttpClient]
       override val config: OAuthConfig = OAuthConfig(
         clientId = "",
         clientSecret = ""
@@ -37,7 +37,7 @@ class SlackOAuthServiceSpec extends Specification with Mockito {
         |}
       """.stripMargin.parseJson
 
-    service.webServiceApi.request(any[HttpRequest])(any[ExecutionContext]) returns Future.successful(response)
+    service.httpClient.request(any[HttpRequest])(any[ExecutionContext]) returns Future.successful(response)
 
     val token = Await.result(service.issueOAuthToken(AccessTokenRequest("test", "http://test.com", "id")), duration)
 
@@ -56,7 +56,7 @@ class SlackOAuthServiceSpec extends Specification with Mockito {
       """.stripMargin.parseJson
     val error = WebServiceException(StatusCodes.BadRequest, response)
 
-    service.webServiceApi.request(any[HttpRequest])(any[ExecutionContext]) returns Future.failed(error)
+    service.httpClient.request(any[HttpRequest])(any[ExecutionContext]) returns Future.failed(error)
 
     Await.result(service.issueOAuthToken(AccessTokenRequest("test", "http://test.com", "id")), duration) must throwA[OAuthException[AccessTokenError]]
   }

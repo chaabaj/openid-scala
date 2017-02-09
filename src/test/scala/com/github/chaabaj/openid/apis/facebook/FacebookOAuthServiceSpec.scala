@@ -1,9 +1,9 @@
 package com.github.chaabaj.openid.apis.facebook
 
 import akka.http.scaladsl.model.{HttpRequest, StatusCodes}
-import com.github.chaabaj.openid.WebServiceApi
+import com.github.chaabaj.openid.HttpClient
 import com.github.chaabaj.openid.exceptions.{OAuthException, WebServiceException}
-import com.github.chaabaj.openid.oauth.{AccessTokenRequest, OAuthConfig}
+import com.github.chaabaj.openid.oauth.{AccessTokenRequest, AccessTokenSuccess, OAuthConfig}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import spray.json._
@@ -13,9 +13,9 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 
 class FacebookOAuthServiceSpec extends Specification with Mockito {
 
-  private def createService(): FacebookOAuthService =
-    new FacebookOAuthService {
-      override val webServiceApi: WebServiceApi = smartMock[WebServiceApi]
+  private def createService(): FacebookOAuthClient =
+    new FacebookOAuthClient {
+      override val httpClient: HttpClient = smartMock[HttpClient]
       override val config: OAuthConfig = OAuthConfig(
         clientId = "",
         clientSecret = ""
@@ -38,10 +38,10 @@ class FacebookOAuthServiceSpec extends Specification with Mockito {
         |}
       """.stripMargin.parseJson
 
-    service.webServiceApi.request(any[HttpRequest])(any[ExecutionContext]) returns Future.successful(response)
+    service.httpClient.request(any[HttpRequest])(any[ExecutionContext]) returns Future.successful(response)
 
     val token = Await.result(service.issueOAuthToken(AccessTokenRequest("test", "http://test.com", "id")), duration)
-    val expectedToken = response.convertTo[FacebookAccessTokenSuccess]
+    val expectedToken = response.convertTo[AccessTokenSuccess]
 
     token must equalTo(expectedToken)
   }
@@ -60,7 +60,7 @@ class FacebookOAuthServiceSpec extends Specification with Mockito {
       """.stripMargin.parseJson
     val error = WebServiceException(StatusCodes.BadRequest, response)
 
-    service.webServiceApi.request(any[HttpRequest])(any[ExecutionContext]) returns Future.failed(error)
+    service.httpClient.request(any[HttpRequest])(any[ExecutionContext]) returns Future.failed(error)
 
     Await.result(service.issueOAuthToken(AccessTokenRequest("test", "test", "id")), duration) must throwA[OAuthException[FacebookAccessTokenError]]
   }
