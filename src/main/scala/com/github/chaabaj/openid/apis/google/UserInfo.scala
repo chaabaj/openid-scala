@@ -21,16 +21,16 @@ case class UserInfo(
   locale: Option[String]
 ) extends OpenIDConnectStandardClaims {
   // these fields are not supported
-  override val middleName: Option[String] = None
-  override val nickName: Option[String] = None
-  override val preferredUserName: Option[String] = None
-  override val website: Option[String] = None
-  override val birthDate: Option[String] = None
-  override val zoneinfo: Option[String] = None
-  override val phoneNumber: Option[String] = None
-  override val phoneNumberVerified: Option[Boolean] = None
-  override val address: Option[Any] = None
-  override val updatedAt: Option[String] = None
+  override def middleName: Option[String] = None
+  override def nickName: Option[String] = None
+  override def preferredUserName: Option[String] = None
+  override def website: Option[String] = None
+  override def birthDate: Option[String] = None
+  override def zoneinfo: Option[String] = None
+  override def phoneNumber: Option[String] = None
+  override def phoneNumberVerified: Option[Boolean] = None
+  override def address: Option[Any] = None
+  override def updatedAt: Option[String] = None
 }
 
 object UserInfo {

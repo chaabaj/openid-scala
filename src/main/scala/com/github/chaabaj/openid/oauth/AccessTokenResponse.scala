@@ -4,7 +4,7 @@ import spray.json.RootJsonFormat
 
 case class AccessTokenSuccess(
   accessToken: String,
-  tokenType: Option[String],
+  tokenType: Option[String] = None,
   scope: Option[String] = None,
   idToken: Option[String] = None,
   refreshToken: Option[String] = None,
