@@ -1,24 +1,24 @@
 package com.github.chaabaj.openid.oauth
 
 trait OpenIDConnectStandardClaims {
-  val sub: String
-  val name: Option[String]
-  val givenName: Option[String]
-  val familyName: Option[String]
-  val middleName: Option[String]
-  val nickName: Option[String]
-  val preferredUserName: Option[String]
-  val profile: Option[String]
-  val picture: Option[String]
-  val website: Option[String]
-  val email: Option[String]
-  val emailVerified: Option[Boolean]
-  val gender: Option[String]
-  val birthDate: Option[String]
-  val zoneinfo: Option[String]
-  val locale: Option[String]
-  val phoneNumber: Option[String]
-  val phoneNumberVerified: Option[Boolean]
-  val address: Option[Any]// TODO see RFC4627
-  val updatedAt: Option[String]
+  def sub: String
+  def name: Option[String]
+  def givenName: Option[String]
+  def familyName: Option[String]
+  def middleName: Option[String]
+  def nickName: Option[String]
+  def preferredUserName: Option[String]
+  def profile: Option[String]
+  def picture: Option[String]
+  def website: Option[String]
+  def email: Option[String]
+  def emailVerified: Option[Boolean]
+  def gender: Option[String]
+  def birthDate: Option[String]
+  def zoneinfo: Option[String]
+  def locale: Option[String]
+  def phoneNumber: Option[String]
+  def phoneNumberVerified: Option[Boolean]
+  def address: Option[Any]// TODO see RFC4627
+  def updatedAt: Option[String]
 }

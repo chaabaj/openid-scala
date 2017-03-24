@@ -20,7 +20,7 @@ private [openid] class HttpClient(implicit actorSystem: ActorSystem, timeout: Fi
   def request(httpRequest: HttpRequest)(implicit exc: ExecutionContext): Future[JsValue] =
     for {
       response <- http.singleRequest(httpRequest)
-      body <- response.entity.toStrict(timeout).map(_.data.decodeString("utf8"))
+      body <- response.entity.toStrict(timeout).map(_.data.utf8String)
       data <- {
         responseParser.parse(body) match {
           case Success(data) =>
