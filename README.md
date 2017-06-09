@@ -13,75 +13,34 @@ It's only server side authentication. You must implement yourself the client-sid
 - Google
 - Facebook
 - Slack
+- Github
+- Backlog
 
 ## Providers to be implemented
 
-- Github
 - OpenStack
 - Any other can come from a PR
 
-## Implement with a custom provider
+## Usage
 
-You need to implement two trait to create a OpenIDConnect service: OAuthService + IdentityService
-
-```scala
-
-trait SampleIdentityService extends IdentityService {
-  val webServiceApi: WebServiceApi[JsValue]
-
-  override def getIdentity(token: OAuthTokenIssuing)(implicit exc: ExecutionContext): Future[String] = {
-    val httpRequest = HttpRequest(
-      uri = Uri("https://www.sample.com/v1/user/me")
-    ).withHeaders(RawHeader("Authorization", token.accessToken))
-
-    webServiceApi.request(httpRequest)
-      .map(_.asJsObject.getFields("email").head.convertTo[String])
-  }
-}
 ```
+  object App {
 
-```scala
+    import scala.concurrent.duration._
+    
+    implicit val actorSystem = ActorSystem("system")
+    implicit val timeout = 5.seconds
 
-trait SampleOAuthService extends OAuthService {
-  val webServiceApi: WebServiceApi[JsValue]
 
-  import com.github.chaabaj.openid.oauth.OAuthResponseFormat._
+    def main(args: Array[String]): Unit = {
+      val request = AccessTokenRequest("code", "redirect_uri", "client_id", "client_secret")
+      val client = GoogleOAuthClient()
 
-  override def issueOAuthToken(authorizationCode: String, redirectUri: String)
-                              (implicit exc: ExecutionContext): Future[OAuthTokenIssuing] = {
-    val httpRequest = HttpRequest(
-      uri = Uri("https://www.sample.com/v1/auth")
-        .withQuery(
-          Query(
-            "client_id" -> config.clientId,
-            "client_secret" -> config.clientSecret,
-            "code" -> authorizationCode,
-            "redirect_uri" -> redirectUri
-          )
-        )
-    )
-
-    webServiceApi.request(httpRequest)
-      .map(_.convertTo[OAuthTokenIssuing])
-      .recover {
-        case WebServiceException(statusCode, jsError: JsValue) =>
-          throw OAuthException(statusCode, jsError.convertTo[OAuthError])
-        case t: Throwable =>
-          throw t
+      client.issueOAuthToken(request).map { accessToken =>
+        println(accessToken)
       }
-  }
-}
-
-```
-
-```scala
-object SampleOpenIDConnect {
-  def apply(config: OAuthConfig)(implicit actorSystem: ActorSystem, timeout: FiniteDuration): OpenIDConnect =
-    new OpenIDConnect {
-      override val identityService: IdentityService = SampleIdentityService()
-      override val oauthService: OAuthService = SampleOAuthService(config)
     }
-}
+  }
 ```
 
 ## Installation
