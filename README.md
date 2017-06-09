@@ -23,7 +23,7 @@ It's only server side authentication. You must implement yourself the client-sid
 
 ## Usage
 
-```
+```scala
   object App {
 
     import scala.concurrent.duration._
