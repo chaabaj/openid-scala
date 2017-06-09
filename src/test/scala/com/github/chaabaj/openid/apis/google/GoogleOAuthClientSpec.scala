@@ -21,7 +21,7 @@ class GoogleOAuthClientSpec extends Specification with Mockito {
       override def getUserInfo(token: AccessTokenSuccess)(implicit exc: ExecutionContext): Future[UserInfo] = ???
     }
 
-  private val duration = 10 seconds
+  private val duration = 10.seconds
 
   import scala.concurrent.ExecutionContext.Implicits.global
 

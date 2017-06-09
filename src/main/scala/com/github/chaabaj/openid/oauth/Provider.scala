@@ -39,3 +39,9 @@ final class Facebook extends Provider {
   type AuthorizationError = oauth.AuthorizationError
 }
 
+final class Backlog extends Provider {
+  type AccessTokenError = oauth.AccessTokenError
+  type AuthorizationResponse = oauth.AuthorizationResponse
+  type AuthorizationRequest = oauth.AuthorizationSuccess
+  type AuthorizationError = oauth.AuthorizationError
+}
