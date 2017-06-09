@@ -36,9 +36,11 @@ It's only server side authentication. You must implement yourself the client-sid
       val request = AccessTokenRequest("code", "redirect_uri", "client_id", "client_secret")
       val client = GoogleOAuthClient()
 
-      client.issueOAuthToken(request).map { accessToken =>
-        println(accessToken)
-      }
+      val identityF = for {
+        accessToken <- client.issueOAuthToken(request)
+        identity <- client.getUserInfo(accessToken)
+      } yield identity
+      
     }
   }
 ```
