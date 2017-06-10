@@ -1,4 +1,4 @@
-package com.github.chaabaj.openid.apis.google
+package com.github.chaabaj.openid.apis.backlog
 
 import akka.http.scaladsl.model.{HttpRequest, StatusCodes}
 import com.github.chaabaj.openid.HttpClient
@@ -11,29 +11,29 @@ import spray.json._
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}
 
-class GoogleOAuthClientSpec extends Specification with Mockito {
+class BacklogOAuthServiceSpec extends Specification with Mockito {
 
-  private def createService(): GoogleOAuthClient =
-    new GoogleOAuthClient {
+  private def createService(): BacklogOAuthClient =
+    new BacklogOAuthClient {
       override val httpClient: HttpClient = smartMock[HttpClient]
       override protected def accessTokenUrl: String = "http://example.com"
 
       override def getUserInfo(token: AccessTokenSuccess)(implicit exc: ExecutionContext): Future[UserInfo] = ???
     }
 
-  private val duration = 10.seconds
+  private val duration = 10 seconds
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  "#should retrieve token" >> {
+  "should get a OAuthToken" >> {
     val service = createService()
     val response =
       """
         |{
-        |  "access_token": "ya29.Ci_OA_Y9x0Bm19gpLdkw0nAdeE4oGrO5zC_9GgO8Xif77cPCqPYM0pi2YVby7BrZMw",
-        |  "token_type": "Bearer",
-        |  "expires_in": 3600,
-        |  "refresh_token": "1/u_yqwtrZepXQSiX3pWB-m5WxXFp6TaW1Jybu83rJlBbZ4W-rkFhlkCeTmfs-4SGy"
+        |    "access_token": "bfdbfdbfad",
+        |    "token_type":"Bearer",
+        |    "expires_in":3600,
+        |    "refresh_token":"YES YES"
         |}
       """.stripMargin.parseJson
 
@@ -45,7 +45,7 @@ class GoogleOAuthClientSpec extends Specification with Mockito {
     token must equalTo(expectedToken)
   }
 
-  "should fails to retreive a token with an OAuthException" >> {
+  "should fails with an OAuthException" >> {
     val service = createService()
     val response =
       """
@@ -58,14 +58,6 @@ class GoogleOAuthClientSpec extends Specification with Mockito {
 
     service.httpClient.request(any[HttpRequest])(any[ExecutionContext]) returns Future.failed(error)
 
-    Await.result(service.issueOAuthToken(AccessTokenRequest("test", "http://test.com", "id", "")), duration) must throwA[OAuthException[AccessTokenError]]
-  }
-
-  "should fails with a RuntimeException" >> {
-    val service = createService()
-
-    service.httpClient.request(any[HttpRequest])(any[ExecutionContext]) returns Future.failed(new RuntimeException)
-
-    Await.result(service.issueOAuthToken(AccessTokenRequest("test", "http://test.com", "id", "")), duration) must throwA[RuntimeException]
+    Await.result(service.issueOAuthToken(AccessTokenRequest("test", "test", "id", "")), duration) must throwA[OAuthException[AccessTokenError]]
   }
 }
