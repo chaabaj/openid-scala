@@ -5,7 +5,8 @@ import com.github.chaabaj.openid.oauth.OpenIDConnectStandardClaims
 case class BacklogUserInfo (
   name: Option[String],
   lang: String,
-  mailAddress: String
+  mailAddress: String,
+  userId: Long
 ) extends OpenIDConnectStandardClaims {
   // Not supported fields
   def sub: String = ""
@@ -31,5 +32,5 @@ case class BacklogUserInfo (
 
 object BacklogUserInfo {
   import com.github.chaabaj.openid.oauth.OAuthResponseFormat._
-  implicit val jsonFormat = jsonFormat3(BacklogUserInfo.apply)
+  implicit val jsonFormat = jsonFormat4(BacklogUserInfo.apply)
 }
