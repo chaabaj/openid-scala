@@ -4,7 +4,7 @@ import com.github.chaabaj.openid.oauth.OpenIDConnectStandardClaims
 
 case class BacklogUserInfo (
   name: Option[String],
-  lang: String,
+  lang: Option[String],
   mailAddress: String,
   userId: Long
 ) extends OpenIDConnectStandardClaims {
