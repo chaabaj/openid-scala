@@ -6,7 +6,7 @@ case class BacklogUserInfo (
   name: Option[String],
   lang: Option[String],
   mailAddress: String,
-  userId: Long
+  userId: String
 ) extends OpenIDConnectStandardClaims {
   // Not supported fields
   def sub: String = ""
