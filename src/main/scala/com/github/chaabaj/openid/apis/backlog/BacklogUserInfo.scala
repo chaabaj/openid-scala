@@ -31,6 +31,6 @@ case class BacklogUserInfo (
 }
 
 object BacklogUserInfo {
-  import com.github.chaabaj.openid.oauth.OAuthResponseFormat._
+  import spray.json.DefaultJsonProtocol._
   implicit val jsonFormat = jsonFormat4(BacklogUserInfo.apply)
 }
