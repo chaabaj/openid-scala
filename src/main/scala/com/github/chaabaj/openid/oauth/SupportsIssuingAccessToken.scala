@@ -29,10 +29,9 @@ trait SupportsIssuingAccessToken { self: OAuthClient =>
       .map(_.convertTo[AccessTokenSuccess])
       .recover {
         case WebServiceException(status, jsonError: JsValue) =>
-          throw new OAuthException(status, jsonError.convertTo[Provider#AccessTokenError])
+          throw OAuthException(status, jsonError.convertTo[Provider#AccessTokenError])
         case t: Throwable =>
           throw t
       }
   }
-
 }

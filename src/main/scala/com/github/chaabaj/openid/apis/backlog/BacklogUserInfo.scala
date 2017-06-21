@@ -33,5 +33,5 @@ case class BacklogUserInfo (
 
 object BacklogUserInfo {
   import spray.json.DefaultJsonProtocol._
-  implicit val jsonFormat = jsonFormat4(BacklogUserInfo.apply)
+  implicit val jsonFormat = jsonFormat5(BacklogUserInfo.apply)
 }
