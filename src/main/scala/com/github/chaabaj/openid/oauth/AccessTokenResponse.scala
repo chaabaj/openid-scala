@@ -8,7 +8,7 @@ case class AccessTokenSuccess(
   scope: Option[String] = None,
   idToken: Option[String] = None,
   refreshToken: Option[String] = None,
-  expireIn: Option[Long] = None,
+  expiresIn: Option[Long] = None,
   state: Option[String] = None)
 
 object AccessTokenSuccess {
